@@ -3,14 +3,14 @@ import { AVATAR_GRID, getAvatarPaths } from './dither';
 import type { AvatarPalette } from './dither';
 
 export type DitheringAvatarProps = Omit<ComponentProps<'svg'>, 'children'> & {
-  seed: string;
+  name: string;
   size?: number | string;
   shape?: 'circle' | 'square';
   palette?: AvatarPalette;
 };
 
 export function DitheringAvatar(props: DitheringAvatarProps): ReactElement {
-  const { seed, size = 32, shape = 'circle', palette, style, ...rest } = props;
+  const { name, size = 32, shape = 'circle', palette, style, ...rest } = props;
 
   return (
     <svg
@@ -22,7 +22,7 @@ export function DitheringAvatar(props: DitheringAvatarProps): ReactElement {
       style={{ borderRadius: shape === 'circle' ? '50%' : '25%', ...style }}
       {...rest}
     >
-      {getAvatarPaths(seed, { palette }).map((path) => (
+      {getAvatarPaths(name, { palette }).map((path) => (
         <path key={path.d} d={path.d} fill={path.fill} />
       ))}
     </svg>

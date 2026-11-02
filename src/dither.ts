@@ -1,9 +1,9 @@
-export type AvatarPalette = readonly [
-  name: string,
-  dark: string,
-  mid: string,
-  light: string,
-];
+export type AvatarPalette = {
+  name?: string;
+  dark: string;
+  mid: string;
+  light: string;
+};
 
 export type AvatarPath = {
   d: string;
@@ -11,26 +11,26 @@ export type AvatarPath = {
 };
 
 export const AVATAR_PALETTES: readonly AvatarPalette[] = [
-  ['Red', '#5C120C', '#F13F34', '#FFB8AE'],
-  ['Orange', '#5E2A07', '#F2711C', '#FFC9A3'],
-  ['Amber', '#5A3D04', '#E5A00D', '#FBE3A1'],
-  ['Green', '#0F3D22', '#2FA36B', '#B5EBCB'],
-  ['Teal', '#0B3B3E', '#1C9AA5', '#ADE6EA'],
-  ['Blue', '#0E2A5C', '#3B6FF0', '#B9CCFF'],
-  ['Violet', '#2E1563', '#7A4DE8', '#D2C2FF'],
-  ['Pink', '#5E1036', '#E5488F', '#FFC2DD'],
-  ['Crimson', '#4E0A18', '#D42A4C', '#FFB3C2'],
-  ['Coral', '#5C1E14', '#FF7A59', '#FFD0C2'],
-  ['Rust', '#4A1E0B', '#C4561F', '#F4C3A3'],
-  ['Lime', '#2C3D07', '#8CC21D', '#DDF3A8'],
-  ['Olive', '#2E3210', '#8A8F2E', '#E1E3B4'],
-  ['Mint', '#0D3B2E', '#3CC79A', '#C2F2E1'],
-  ['Cyan', '#073A47', '#14B2D6', '#AEEBF7'],
-  ['Sky', '#0B2F4F', '#3E9BE8', '#BFE0FF'],
-  ['Indigo', '#1B1B5C', '#4F52D9', '#C8C9FF'],
-  ['Plum', '#3D1240', '#A23BB0', '#EBC3F0'],
-  ['Rose', '#4F1427', '#E2577A', '#FFC9D6'],
-  ['Slate', '#1E2530', '#5B6B80', '#D3DAE3'],
+  { name: 'Red', dark: '#5C120C', mid: '#F13F34', light: '#FFB8AE' },
+  { name: 'Orange', dark: '#5E2A07', mid: '#F2711C', light: '#FFC9A3' },
+  { name: 'Amber', dark: '#5A3D04', mid: '#E5A00D', light: '#FBE3A1' },
+  { name: 'Green', dark: '#0F3D22', mid: '#2FA36B', light: '#B5EBCB' },
+  { name: 'Teal', dark: '#0B3B3E', mid: '#1C9AA5', light: '#ADE6EA' },
+  { name: 'Blue', dark: '#0E2A5C', mid: '#3B6FF0', light: '#B9CCFF' },
+  { name: 'Violet', dark: '#2E1563', mid: '#7A4DE8', light: '#D2C2FF' },
+  { name: 'Pink', dark: '#5E1036', mid: '#E5488F', light: '#FFC2DD' },
+  { name: 'Crimson', dark: '#4E0A18', mid: '#D42A4C', light: '#FFB3C2' },
+  { name: 'Coral', dark: '#5C1E14', mid: '#FF7A59', light: '#FFD0C2' },
+  { name: 'Rust', dark: '#4A1E0B', mid: '#C4561F', light: '#F4C3A3' },
+  { name: 'Lime', dark: '#2C3D07', mid: '#8CC21D', light: '#DDF3A8' },
+  { name: 'Olive', dark: '#2E3210', mid: '#8A8F2E', light: '#E1E3B4' },
+  { name: 'Mint', dark: '#0D3B2E', mid: '#3CC79A', light: '#C2F2E1' },
+  { name: 'Cyan', dark: '#073A47', mid: '#14B2D6', light: '#AEEBF7' },
+  { name: 'Sky', dark: '#0B2F4F', mid: '#3E9BE8', light: '#BFE0FF' },
+  { name: 'Indigo', dark: '#1B1B5C', mid: '#4F52D9', light: '#C8C9FF' },
+  { name: 'Plum', dark: '#3D1240', mid: '#A23BB0', light: '#EBC3F0' },
+  { name: 'Rose', dark: '#4F1427', mid: '#E2577A', light: '#FFC9D6' },
+  { name: 'Slate', dark: '#1E2530', mid: '#5B6B80', light: '#D3DAE3' },
 ];
 
 export const AVATAR_GRID = 16;
@@ -42,9 +42,9 @@ const BAYER = [
   [15, 7, 13, 5],
 ];
 
-function createRandom(seed: string) {
+function createRandom(name: string) {
   let h = 2166136261;
-  for (const c of seed) {
+  for (const c of name) {
     h ^= c.charCodeAt(0);
     h = Math.imul(h, 16777619);
   }
@@ -58,9 +58,9 @@ function createRandom(seed: string) {
   };
 }
 
-export function pickPalette(seed: string): AvatarPalette {
+export function pickPalette(name: string): AvatarPalette {
   let h = 7;
-  for (const c of seed) {
+  for (const c of name) {
     h = (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0;
   }
 
@@ -72,12 +72,12 @@ type AvatarPathsOptions = {
 };
 
 export function getAvatarPaths(
-  seed: string,
+  name: string,
   options: AvatarPathsOptions = {}
 ): AvatarPath[] {
-  const { palette = pickPalette(seed) } = options;
+  const { palette = pickPalette(name) } = options;
 
-  const r = createRandom(seed);
+  const r = createRandom(name);
   const angle = r() * Math.PI * 2;
   const dx = Math.cos(angle);
   const dy = Math.sin(angle);
@@ -124,8 +124,10 @@ export function getAvatarPaths(
     }
   }
 
+  const fills = [palette.dark, palette.mid, palette.light];
+
   return paths
-    .map((d, index) => ({ d, fill: palette[index + 1]! }))
+    .map((d, index) => ({ d, fill: fills[index]! }))
     .filter((path) => path.d);
 }
 
@@ -134,12 +136,12 @@ type AvatarSvgOptions = AvatarPathsOptions & {
 };
 
 export function getAvatarSvg(
-  seed: string,
+  name: string,
   options: AvatarSvgOptions = {}
 ): string {
   const { size = 64, palette } = options;
 
-  const body = getAvatarPaths(seed, { palette })
+  const body = getAvatarPaths(name, { palette })
     .map((path) => `<path d="${path.d}" fill="${path.fill}"/>`)
     .join('');
 

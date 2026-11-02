@@ -25,18 +25,18 @@ pnpm add dithering-avatar
 ```tsx
 import { DitheringAvatar } from 'dithering-avatar';
 
-<DitheringAvatar seed="Acme Mail" />
-<DitheringAvatar seed="Acme Mail" size={48} shape="square" />
+<DitheringAvatar name="Acme Mail" />
+<DitheringAvatar name="Acme Mail" size={48} shape="square" />
 ```
 
 React 17 or later is a peer dependency.
 
 ### Props
 
-- `seed` - The string the avatar comes from. Required.
+- `name` - The string the avatar comes from. Required. Use an id if people can rename themselves, so their avatar stays the same.
 - `size` - Width and height. Defaults to `32`.
 - `shape` - `circle` or `square`. Defaults to `circle`.
-- `palette` - Your own colors, as `['Mono', '#111111', '#777777', '#EEEEEE']`. Defaults to a palette from the seed.
+- `palette` - Your own colors, as `{ dark: '#111111', mid: '#777777', light: '#EEEEEE' }`. Defaults to a palette from the name.
 
 It also takes all other `<svg>` props. The avatar has `aria-hidden` by default.
 
@@ -54,13 +54,13 @@ const src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 ### Other Exports
 
 - `getAvatarPaths` - Returns `{ d, fill }[]` for a `0 0 16 16` viewBox.
-- `pickPalette` - Returns the palette for a seed.
-- `AVATAR_PALETTES` - The 20 palettes, as `[name, dark, mid, light]`.
+- `pickPalette` - Returns the palette for a name.
+- `AVATAR_PALETTES` - The 20 palettes, as `{ name, dark, mid, light }`.
 - `AVATAR_GRID` - The grid size.
 
 ### Stability
 
-A seed keeps its avatar. Only a major version can change the algorithm or the palettes.
+A name keeps its avatar. Only a major version can change the algorithm or the palettes.
 
 ### Contributing
 

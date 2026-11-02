@@ -14,7 +14,7 @@ import type { AvatarPalette } from 'dithering-avatar';
 
 const GOLDEN = [
   {
-    seed: 'Acme Mail',
+    name: 'Acme Mail',
     palette: 'Cyan',
     rows: [
       '0101111212222222',
@@ -36,7 +36,7 @@ const GOLDEN = [
     ],
   },
   {
-    seed: 'Quiet Pine',
+    name: 'Quiet Pine',
     palette: 'Green',
     rows: [
       '0111111212122222',
@@ -58,7 +58,7 @@ const GOLDEN = [
     ],
   },
   {
-    seed: 'sukha-moy',
+    name: 'sukha-moy',
     palette: 'Mint',
     rows: [
       '1111110100000000',
@@ -81,13 +81,13 @@ const GOLDEN = [
   },
 ];
 
-function getRows(seed: string, palette: AvatarPalette) {
+function getRows(name: string, palette: AvatarPalette) {
   const rows = Array.from({ length: AVATAR_GRID }, () =>
     Array<string>(AVATAR_GRID).fill('.')
   );
 
-  for (const path of getAvatarPaths(seed, { palette })) {
-    const tone = palette.indexOf(path.fill) - 1;
+  for (const path of getAvatarPaths(name, { palette })) {
+    const tone = [palette.dark, palette.mid, palette.light].indexOf(path.fill);
     for (const match of path.d.matchAll(/M(\d+) (\d+)h(\d+)v1h-\d+z/g)) {
       const [, x, y, width] = match.map(Number) as [number, number, number, number];
       for (let i = 0; i < width; i++) {
@@ -100,22 +100,22 @@ function getRows(seed: string, palette: AvatarPalette) {
   return rows.map((row) => row.join(''));
 }
 
-for (const { seed, palette, rows } of GOLDEN) {
-  test(`keeps the avatar of "${seed}" stable`, () => {
-    const picked = pickPalette(seed);
-    assert.equal(picked[0], palette);
-    assert.deepEqual(getRows(seed, picked), rows);
+for (const { name, palette, rows } of GOLDEN) {
+  test(`keeps the avatar of "${name}" stable`, () => {
+    const picked = pickPalette(name);
+    assert.equal(picked.name, palette);
+    assert.deepEqual(getRows(name, picked), rows);
   });
 }
 
 test('keeps the palette order stable', () => {
   assert.equal(AVATAR_PALETTES.length, 20);
-  assert.equal(AVATAR_PALETTES[0]?.[0], 'Red');
-  assert.equal(AVATAR_PALETTES[19]?.[0], 'Slate');
+  assert.equal(AVATAR_PALETTES[0]?.name, 'Red');
+  assert.equal(AVATAR_PALETTES[19]?.name, 'Slate');
 });
 
 test('accepts a custom palette', () => {
-  const palette: AvatarPalette = ['Mono', '#000000', '#777777', '#ffffff'];
+  const palette: AvatarPalette = { dark: '#000000', mid: '#777777', light: '#ffffff' };
   const fills = getAvatarPaths('Acme Mail', { palette }).map((path) => path.fill);
   assert.deepEqual(fills, ['#000000', '#777777', '#ffffff']);
 });
@@ -129,7 +129,7 @@ test('builds a standalone SVG string', () => {
 test('renders the same paths in React', () => {
   const html = renderToStaticMarkup(
     createElement(DitheringAvatar, {
-      seed: 'Acme Mail',
+      name: 'Acme Mail',
       shape: 'square',
       'aria-label': 'Acme Mail',
     })
