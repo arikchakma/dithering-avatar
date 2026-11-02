@@ -1,6 +1,6 @@
 {
   "name": "dithering-avatar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn names into dithered SVG avatars with zero dependencies",
   "keywords": [
     "avatar",
